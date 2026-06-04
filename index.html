@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Catetic-Exchange Room</title>
+    <style>
+        :root {
+            --matrix-green: #00ff66;
+            --matrix-dark: #0d1117;
+            --overlay-bg: rgba(7, 10, 15, 0.96);
+            --info-modal-bg: rgba(5, 20, 5, 0.96);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: var(--matrix-dark);
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            color: var(--matrix-green);
+        }
+
+        /* --- SCREEN CHASSIS --- */
+        .app-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 10;
+            display: none;
+        }
+
+        #screen-intro {
+            display: block;
+            background-image: url('IMG_9249.png');
+            cursor: pointer;
+        }
+
+        #screen-cockpit {
+            background-image: url('IMG_9247.jpg');
+        }
+
+        /* --- ROOM #1: FOYER ARRANGEMENT --- */
+        .intro-container {
+            position: absolute;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .welcome-touch-zone {
+            width: 100%;
+            height: 90px;
+            cursor: pointer;
+            background: rgba(0, 255, 102, 0.02);
+            border-radius: 8px;
+        }
+
+        /* --- ROOM #2: COCKPIT FRAMEWORK --- */
+        .cockpit-grid {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 75px 1fr;
+            grid-template-rows: 1fr;
+        }
+
+        .cockpit-grid.no-sidebar {
+            grid-template-columns: 1fr !important;
+        }
+
+        .control-deck {
+            background: rgba(13, 17, 23, 0.0077);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 40px;
+            gap: 25px;
+            z-index: 20;
+            width: 100%;
+        }
+
+        .control-deck.hidden {
+            display: none !important;
+        }
+
+        .deck-node {
+            width: 55px;
+            height: 55px;
+            border: 1px solid rgba(0, 255, 102, 0.4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            cursor: pointer;
+            background: rgba(7, 10, 15, 0.8);
+            transition: all 0.15s ease;
+        }
+        .deck-node:active, .deck-node.active {
+            background: var(--matrix-green);
+            box-shadow: 0 0 20px var(--matrix-green);
+            transform: scale(0.92);
+        }
+
+        .deck-node.active-green {
+            background: #00ff66 !important;
+            box-shadow: 0 0 25px #00ff66, inset 0 0 10px #ffffff !important;
+            border: 2px solid #ffffff !important;
+            color: #000000 !important;
+        }
+
+        .main-workspace {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 40px 20px 0 20px;
+            height: 100%;
+        }
+        
+        .ingestion-container {
+            width: 100%;
+            max-width: 200px;
+            margin-bottom: 200px !important; 
+            margin-left: auto;
+            margin-right: auto ;
+            z-index: 99;
+        }
+
+        .ingestion-container.hidden-hardware {
+            display: none !important;
+        }
+        
+        .main-workspace.centered .ingestion-container {
+            transform: none !important;
+            margin-bottom: 27% !important;
+        }
+        .main-workspace:not(.centered) .ingestion-container {
+            transform: translateX(-37.5px);
+        }
+
+        .terminal-field {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid var(--matrix-green);
+            padding: 16px;
+            color: var(--matrix-green);
+            font-family: inherit;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
+            border-radius: 6px;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        /* Bottom Footers */
+        .crypto-footer-strip {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 160px;
+            display: flex;
+            z-index: 12;
+        }
+        .crypto-footer-strip.hidden {
+            display: none !important;
+        }
+
+        .crypto-touch-box {
+            height: 100%;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.01);
+        }
+        #box-btc { width: 45%; }
+        #box-spacer { width: 10%; cursor: default; }
+        #box-eth { width: 45%; }
+
+        /* --- PAW NOTIFICATIONS OVERLAY --- */
+        #paw-notification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 500;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 40px;
+        }
+
+        .paw-banner {
+            background: #000;
+            border: 2px solid var(--matrix-green);
+            color: var(--matrix-green);
+            padding: 18px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 0 25px var(--matrix-green);
+            text-align: center;
+            max-width: 85%;
+        }
+
+        /* --- TERMINAL MODAL POPUPS --- */
+        .terminal-modal {
+            position: absolute;
+            top: 50%;
+            right: 15px; 
+            transform: translateY(-50%);
+            width: 76%;
+            max-width: 295px;
+            background: var(--overlay-bg);
+            border: 2px solid var(--matrix-green);
+            box-shadow: 0 0 35px rgba(0, 255, 102, 0.4);
+            border-radius: 8px;
+            padding: 20px;
+            z-index: 100;
+            display: none;
+        }
+        
+        .terminal-modal.centered {
+            right: 50% !important;
+            transform: translate(50%, -50%) !important;
+        }
+
+        /* --- SYSTEM BREACH RED DIALOG MODAL --- */
+        .system-breach-alert-modal {
+            position: absolute;
+            bottom: 3%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 380px;
+            background: rgba(10, 0, 0, 0.95);
+            border: 2px solid #ff3333;
+            box-shadow: 0 0 30px rgba(255, 51, 51, 0.5);
+            border-radius: 12px;
+            padding: 22px;
+            z-index: 250;
+            display: none;
+            text-align: left;
+        }
+
+        .breach-header {
+            color: #ff3333;
+            font-size: 1.05rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .breach-body {
+            color: #ffffff;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            margin-bottom: 18px;
+            font-family: inherit;
+        }
+
+        /* --- LOADING OVERLAY --- */
+        #matrix-loader-shroud {
+            position: absolute;
+            top: 50%;
+            right: 15px; 
+            transform: translateY(-50%);
+            width: 76%;
+            max-width: 295px;
+            background: #000000;
+            border: 2px dashed var(--matrix-green);
+            border-radius: 8px;
+            padding: 30px 20px;
+            z-index: 200;
+            display: none;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 255, 102, 0.6);
+        }
+        #matrix-loader-shroud.centered {
+            right: 50% !important;
+            transform: translate(50%, -50%) !important;
+        }
+
+        .loader-pulse-text {
+            font-size: 0.95rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            animation: loaderBlink 1.2s infinite alternate;
+        }
+
+        @keyframes loaderBlink {
+            0% { opacity: 0.3; text-shadow: 0 0 2px var(--matrix-green); }
+            100% { opacity: 1; text-shadow: 0 0 15px var(--matrix-green); }
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-bottom: 1px dashed var(--matrix-green);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .receipt-container {
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid rgba(0, 255, 102, 0.4);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            max-height: 240px; 
+            overflow-y: auto;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .receipt-line {
+            font-size: 0.76rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+            white-space: nowrap; 
+        }
+
+        .receipt-action-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .action-sub-btn {
+            flex: 1;
+            background: rgba(0,255,102,0.1);
+            border: 1.5px solid var(--matrix-green);
+            color: var(--matrix-green);
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 0.8rem;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .terminal-action-btn {
+            width: 100%;
+            background: rgba(0, 255, 102, 0.15);
+            border: 2px solid var(--matrix-green);
+            color: var(--matrix-green);
+            padding: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+        .terminal-action-btn:active {
+            background: var(--matrix-green);
+            color: #00;
+        }
+
+        .exchange-select {
+            width: 100%;
+            background: #111b14;
+            border: 2px solid var(--matrix-green);
+            color: var(--matrix-green);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 12px;
+            margin-bottom: 15px;
+            outline: none;
+            border-radius: 4px;
+        }
+        
+        .file-loader-label {
+            display: block;
+            border: 1.5px dashed var(--matrix-green);
+            padding: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-bottom: 15px;
+            background: rgba(0,255,102,0.05);
+            border-radius: 4px;
+        }
+
+        #modal-info-panel {
+            background: var(--info-modal-bg);
+            color: var(--matrix-green);
+            border: 2px solid var(--matrix-green);
+            box-shadow: 0 0 35px rgba(0, 255, 102, 0.4);
+        }
+
+        .comment-sub-window {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px dashed var(--matrix-green);
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .comment-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1.5px solid var(--matrix-green);
+            color: var(--matrix-green);
+            font-family: inherit;
+            padding: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            border-radius: 4px;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        /* --- GROK MODAL CIRCUIT INTERCEPT OVERLAY --- */
+        #grok-circuit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 10, 5, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .grok-joke-box {
+            background: #000000;
+            border: 2px solid var(--matrix-green);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 85%;
+            box-shadow: 0 0 30px rgba(0, 255, 102, 0.5);
+        }
+        .grok-joke-text {
+            color: var(--matrix-green);
+            font-size: 1.15rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        /* --- HARDWARE INTERLAY SCALING WRAPPER CONTAINER --- */
+        .hardware-scaling-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .hardware-aspect-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            max-width: 500px; 
+            pointer-events: none;
+        }
+
+        /* Invisible Park Path Interaction Node */
+        #park-exit-trigger-zone {
+            position: absolute;
+            bottom: 12%;
+            left: 20%;
+            width: 60%;
+            height: 25%;
+            cursor: pointer;
+            background: transparent;
+            z-index: 99;
+            display: none;
+        }
+        .disclaimer-footnote {
+            font-size: 0.62rem !important;
+            color: rgba(0, 255, 102, 0.45) !important;
+            text-align: center;
+            margin-top: 12px;
+            white-space: normal !important;
+            line-height: 1.3;
+        }
+
+        /* --- LOUNGE INTERACTIVE TARGET GRID OVERLAYS --- */
+        #lounge-perks-matrix {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 80;
+            display: none;
+            pointer-events: none;
+        }
+        .lounge-target {
+            position: absolute;
+            background: transparent;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="screen-intro" class="app-screen">
+        <div class="intro-container">
+            <div class="welcome-touch-zone" id="welcome-trigger-node"></div>
+        </div>
+    </div>
+
+    <div id="screen-cockpit" class="app-screen">
+        <div class="cockpit-grid" id="master-grid-layout">
+            
+                <div class="control-deck" id="sidebar-emoji-panel" style="margin-top: 13px;">
+                <div class="deck-node" id="node-exchange">💎</div>
+                <div class="deck-node" id="node-total">🧮</div>
+                <div class="deck-node" id="node-info">🕹️</div>
+                <div class="deck-node" id="node-staytuned">😹</div>
+                <div class="deck-node" id="node-disclaimer">🔬</div>
+            </div>
+
+            <div class="main-workspace" id="core-workspace-layer">
+                <div class="ingestion-container" id="input-container-box">
+                    <input type="text" id="data-core-input" class="terminal-field" placeholder="PASTA DATA 🍜" autocomplete="off" spellcheck="false">
+                </div>
+
+                <div id="park-exit-trigger-zone" onclick="executeParkExitRoute(event)"></div>
+
+                <div class="crypto-footer-strip" id="crypto-footer-links">
+                    <div class="crypto-touch-box" id="box-btc"></div>
+                    <div class="crypto-touch-box" id="box-spacer"></div>
+                    <div class="crypto-touch-box" id="box-eth"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 🏙️ FULL SCREEN LOUNGE ROOM INTERACTION NODES (10 CHANNELS AVAILABLE) -->
+        <div id="lounge-perks-matrix">
+            <!-- 7 Target Spots mapped sequentially across table seating -->
+            <button class="lounge-target" onclick="triggerLoungeSeatAction(1)" style="top: 48%; left: 10%; width: 10%; height: 12%;"></button>
+            <button class="lounge-target" onclick="triggerLoungeSeatAction(2)" style="top: 46%; left: 22%; width: 10%; height: 12%;"></button>
+            <button class="lounge-target" onclick="triggerLoungeSeatAction(3)" style="top: 45%; left: 35%; width: 10%; height: 12%;"></button>
+            <button class="lounge-target" onclick="triggerLoungeSeatAction(4)" style="top: 45%; left: 55%; width: 10%; height: 12%;"></button>
+            <button class="lounge-target" onclick="triggerLoungeSeatAction(5)" style="top: 46%; left: 68%; width: 10%; height: 12%;"></button>
+            <button class="lounge-target" onclick="triggerLoungeSeatAction(6)" style="top: 48%; left: 80%; width: 10%; height: 12%;"></button>
+            <button class="lounge-target" onclick="triggerLoungeSeatAction(7)" style="top: 55%; left: 45%; width: 11%; height: 14%;"></button>
+            
+            <!-- 1 Center Table Target -->
+            <button class="lounge-target" onclick="triggerLoungeCenterTable()" style="top: 60%; left: 25%; width: 50%; height: 16%;"></button>
+            
+            <!-- 1 VICTORY Title Target Header -->
+            <button class="lounge-target" onclick="triggerLoungeVictoryHeader()" style="top: 5%; left: 15%; width: 70%; height: 15%;"></button>
+            
+            <!-- Bottom HUD Control Bars (🔬 Microscope and 🎛️ Audio Switcher Core) -->
+            <button class="lounge-target" onclick="triggerLoungeMicroscopeModal(event)" style="bottom: 2%; left: 4%; width: 16%; height: 10%;"></button>
+            <button class="lounge-target" onclick="triggerLoungeAudioConsoleToggle(event)" style="bottom: 2%; right: 4%; width: 16%; height: 10%;"></button>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 🎛️ HARDWARE LAYER MATRIX DRIVER -->
+    <!-- ================================================================= -->
+    <div id="hardware-keypad-driver" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 95; pointer-events: none;">
+        <div class="hardware-scaling-container">
+            <div class="hardware-aspect-box">
+                
+                <!-- Fixed Realignment - Centers numbers into the actual dark red LED hardware dashboard slot near top center -->
+                <div id="authentic-display" style="position: absolute; top: 6.3%; left: 72%; transform: translateX(-50%); width: 44%; height: 5.5%; color: #00ff66; font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.35rem; text-align: center; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 12px rgba(0, 255, 102, 0.95); box-sizing: border-box; pointer-events: none;"></div>
+
+                <!-- Complete 3x4 Touch Grid Matrix calibrated directly over physical elements (O, K, C keys mapped) -->
+                <div style="position: absolute; top: 17.5%; left: 32.5%; width: 56%; height: 43.5%; display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 5% 5.5%; pointer-events: auto;">
+                    <button onclick="pressVirtualHardwareKey('1')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                    <button onclick="pressVirtualHardwareKey('2')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                    <button onclick="pressVirtualHardwareKey('3')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                    <button onclick="pressVirtualHardwareKey('4')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                    <button onclick="pressVirtualHardwareKey('5')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                    <button onclick="pressVirtualHardwareKey('6')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                    <button onclick="pressVirtualHardwareKey('7')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                    <button onclick="pressVirtualHardwareKey('8')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                    <button onclick="pressVirtualHardwareKey('9')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                    <button onclick="pressVirtualHardwareKey('0')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                    <button onclick="pressVirtualHardwareKey('K')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                    <button onclick="pressVirtualHardwareKey('C')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
+                </div>
+
+                <!-- Independent Silver Navigation Core Button Hitbox -->
+                <button onclick="pressVirtualSilverButton()" style="position: absolute; bottom: 23%; left: 4.5%; width: 90px; height: 90px; background: transparent; border: none; outline: none; border-radius: 50%; cursor: pointer; pointer-events: auto;"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⚠️ RED BREACH WARNING NOTICE CONTAINER -->
+    <div class="system-breach-alert-modal" id="firewall-breach-notice-box">
+        <div class="breach-header">
+            <span>⚠️</span> SYSTEM FIREWALL BREACH DEFECT
+        </div>
+        <div class="breach-body">
+            SYSTEM NOTE: To bypass the matrix firewall, calculate the core token value of the joke or feed the terminal its favorite 7-digit sequence + K. Or send a donation with a memo mail to receive the combination at cateticos@gmail.com.
+        </div>
+        <button class="terminal-action-btn" id="dismiss-breach-notice-btn" style="background: transparent; border: 1.5px solid var(--matrix-green); color: var(--matrix-green);">ACKNOWLEDGE MATRIX ERROR</button>
+    </div>
+
+    <div id="paw-notification-overlay">
+        <div class="paw-banner" id="paw-banner-text"></div>
+    </div>
+
+    <div id="grok-circuit-modal">
+        <div class="grok-joke-box">
+            <div class="grok-joke-text" id="grok-joke-trigger-string"></div>
+            <div style="color: #666; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 8px;">[TAP TEXT TO RUN COMBINATION INTERFACE]</div>
+            <div class="disclaimer-footnote">⚠️ Grok & xAI references are playful fan tribute • Not affiliated with xAI</div>
+        </div>
+    </div>
+
+    <div id="matrix-loader-shroud">
+        <div style="font-size: 2rem; margin-bottom: 12px;">⚡</div>
+        <div class="loader-pulse-text" id="loader-display-string">PROCESSING PIPELINE...</div>
+        <div style="font-size: 0.75rem; color: #888; margin-top: 10px;">CATETIC CALCULATOR SUITE</div>
+    </div>
+
+    <div class="terminal-modal" id="modal-exchange-panel">
+        <div class="modal-title">💎 Platform Select</div>
+        <select class="exchange-select" id="platform-router">
+            <option value="GEMINI" style="color:#00ff66; background:#000;">GEMINI [REAL RATE]</option>
+            <option value="GROK_4_3" style="color:#00ff66; background:#000;">🚀 GROK 4.3 [CUSTOM TRACE]</option>
+            <option value="GROK_4_1" style="color:#00ff66; background:#000;">🚀 GROK 4.1 [LITE CORE]</option>
+            <option value="COMING_SOON" disabled style="color:#666666; background:#000;">,,,,, other platforms coming soon</option>
+        </select>
+        <label class="file-loader-label">
+            📁 LOAD FILE DATA MODULE
+            <input type="file" id="file-ingestor" style="display: none;">
+        </label>
+        <p style="font-size:0.75rem; color:#ff3333; font-weight:bold; margin-bottom:15px; text-align:center;">* Custom donation configurations can be appended directly.</p>
+        <button class="terminal-action-btn modal-close-trigger">OK</button>
+    </div>
+
+    <div class="terminal-modal" id="modal-total-panel">
+        <div class="modal-title">🧮 Tokinitos Invoicing</div>
+        <div class="receipt-container" id="receipt-printout-area"></div>
+        <div class="receipt-action-row">
+            <button class="action-sub-btn" id="receipt-copy-action">COPY DATA</button>
+            <button class="action-sub-btn" id="receipt-save-action">SAVE TO PHOTOS</button>
+        </div>
+        <button class="terminal-action-btn modal-close-trigger">OK</button>
+        <div class="disclaimer-footnote">⚠️ Grok & xAI references are playful fan tribute • Not affiliated with xAI</div>
+    </div>
+
+    <div class="terminal-modal" id="modal-info-panel">
+        <div class="modal-title">🕹️ SYSTEM SPECIFICATION RULES</div>
+        <div style="font-size: 0.85rem; line-height: 1.4; margin-bottom: 15px; font-weight: bold; text-align: left;">
+            <p style="margin-bottom: 8px;">Welcome to the Catetic-Exchange Room ecosystem matrix array.</p>
+            <p style="margin-bottom: 8px;">This terminal consumes raw data injections and displays real-time execution receipt balances mapped across variable platforms and Tokinitos metabolic processing vectors.</p>
+            <p style="color: #ff3333; margin-bottom: 8px;">⚠️ New AI platforms rate variations coming soon.</p>
+            <p style="margin-bottom: 4px;">Thank You for donations.</p>
+            <p>Send a memo when donating with your mail for more future perks.</p>
+        </div>
+        
+        <button class="terminal-action-btn" id="comment-opener-btn" style="background:rgba(0, 255, 102, 0.1); color:var(--matrix-green); font-size:0.75rem; margin-bottom:5px; border-color: var(--matrix-green);">LEAVE A COMMENT / REQUEST OTHER CRYPTO ADDRESSES</button>
+        <form class="comment-sub-window" id="comment-box-portal" action="mailto:cateticos@gmail.com" method="POST" enctype="text/plain">
+            <textarea class="comment-input" id="comment-text-field" name="comment" placeholder="Type comment..."></textarea>
+            <input type="email" class="comment-input" id="comment-mail-field" name="email" placeholder="cateticos@gmail.com">
+            <div style="display:flex; gap:10px;">
+                <button type="button" class="action-sub-btn" id="comment-send-btn">SEND</button>
+                <button type="button" class="action-sub-btn" id="comment-close-btn">CANCEL</button>
+            </div>
+        </form>
+
+        <button class="terminal-action-btn modal-close-trigger" style="margin-top:10px;">.....Back.....</button>
+    </div>
+
+    <div class="terminal-modal" id="modal-disclaimer-panel">
+        <div class="modal-title">🔬 SYSTEM DISCLAIMER</div>
+        <div style="font-size: 0.82rem; line-height: 1.4; margin-bottom: 15px; font-weight: bold; text-align: left;">
+            <p style="margin-bottom: 8px;">Grok & xAI references are playful fan tribute and satirical cyberpunk cat lore.</p>
+            <p style="margin-bottom: 8px;">This is a 100% independent fan project.</p>
+            <p style="margin-bottom: 8px; color: #ff3333;">⚠️ Not affiliated with, endorsed by, or connected to xAI.</p>
+            <p style="margin-bottom: 8px;">Pure feral energy. No official partnership.</p>
+            <p>Built with love and negative budget 🐾</p>
+        </div>
+        <button class="terminal-action-btn modal-close-trigger">OK</button>
+    </div>
+          <!-- SQUEEZE THE POPUP BOX HERE -->
+           <div id="instruction-popup" class="popup-modal" style="display: none;">
+          <div class="popup-content">
+        <h3>CHOOSE YOUR CALCULATION METHOD 🍜</h3>
+        <p>You have two options to process your data:</p>
+        <ul style="text-align: left; margin: 10px auto; max-width: 80%; line-height: 1.5; color: var(--matrix-green);">
+            <li><strong>Option 1:</strong> Open 🧮 right away to see your Tokinitos breakdown.</li>
+            <li><strong>Option 2:</strong> Press 💎 to load your file, then press 🧮 to see your total Tokinitos.</li>
+        </ul>
+        <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 15px;">
+            (Don't worry, your data is never collected — this is pure client-side calculation!)
+        </p>
+        <p style="margin-top: 15px; font-weight: bold;">Thanks for the donation! 😹🙏</p>
+          <button onclick="this.closest('.popup-modal').classList.remove('active')">CLOSE</button>
+    </div>
+</div>
+
+        
+
+    <script>
+        const ASSET_FIREWALL = "Keypad..jpg.jpg";
+        const ASSET_LOUNGE   = "Lounge.jpg.jpg";
+        const ASSET_PARK     = "Park.jpg.jpg";
+
+        const audioMainLoop = new Audio('where_the_water_rests.mp3');
+        const audioMeowLoop = new Audio('Meow.m4a');
+        const audioTune1    = new Audio('Tune1.mp3');
+        const audioTune2    = new Audio('Tune2.mp3');
+        const audioTune3    = new Audio('Tune3.mp3');
+        const audioTune4    = new Audio('Tune4.mp3');
+
+        audioMainLoop.loop = true;
+        audioMeowLoop.loop = true;
+        audioTune1.loop    = true; 
+        audioTune2.loop    = true;
+        audioTune3.loop    = true;
+
+        let audioUnlocked = false;
+        let lastLoadedFileSize = 0; 
+        let bgFreeze = false;
+        let activePlatform = "GEMINI";
+        let rotaryClicks = 0; 
+        let keypadKeyLoopActive = false;
+        let runningInputCache = "";
+        
+        let audioPreLoungeStateTrack = null; 
+        let loungeTune3Active = false;
+
+        const screenIntro = document.getElementById('screen-intro');
+        const screenCockpit = document.getElementById('screen-cockpit');
+        const welcomeTriggerNode = document.getElementById('welcome-trigger-node');
+        
+        const masterGridLayout = document.getElementById('master-grid-layout');
+        const sidebarEmojiPanel = document.getElementById('sidebar-emoji-panel');
+        const coreWorkspaceLayer = document.getElementById('core-workspace-layer');
+        const cryptoFooterLinks = document.getElementById('crypto-footer-links');
+        
+        const inputContainerBox = document.getElementById('input-container-box');
+        const dataCoreInput = document.getElementById('data-core-input');
+        const parkExitTriggerZone = document.getElementById('park-exit-trigger-zone');
+        const loungePerksMatrix = document.getElementById('lounge-perks-matrix');
+        
+        const pawNotificationOverlay = document.getElementById('paw-notification-overlay');
+        const pawBannerText = document.getElementById('paw-banner-text');
+        const matrixLoaderShroud = document.getElementById('matrix-loader-shroud');
+        const loaderDisplayString = document.getElementById('loader-display-string');
+        const nodeExchange = document.getElementById('node-exchange');
+        const nodeTotal = document.getElementById('node-total');
+        const nodeInfo = document.getElementById('node-info');
+        const nodeStayTuned = document.getElementById('node-staytuned');
+
+        const modalExchange = document.getElementById('modal-exchange-panel');
+        const modalTotal = document.getElementById('modal-total-panel');
+        const modalInfo = document.getElementById('modal-info-panel');
+        const platformRouter = document.getElementById('platform-router');
+        const grokCircuitModal = document.getElementById('grok-circuit-modal');
+        const grokJokeTriggerString = document.getElementById('grok-joke-trigger-string');
+        const receiptPrintoutArea = document.getElementById('receipt-printout-area');
+        
+        const firewallBreachNoticeBox = document.getElementById('firewall-breach-notice-box');
+        const dismissBreachNoticeBtn = document.getElementById('dismiss-breach-notice-btn');
+
+        const commentOpenerBtn = document.getElementById('comment-opener-btn');
+        const commentBoxPortal = document.getElementById('comment-box-portal');
+        const commentTextField = document.getElementById('comment-text-field');
+        const commentMailField = document.getElementById('comment-mail-field');
+
+        const nodeDisclaimer = document.getElementById('node-disclaimer');
+        const modalDisclaimer = document.getElementById('modal-disclaimer-panel');
+
+        const WALLET_BTC = "bc1q92lt3zqcsfmyjasjchgqxp4w2khmqwse9c5f59";
+        const WALLET_ETH = "0x8238da0AEB879164a7B53607E527350f0D1F1990";
+
+        function applyNeonSidebarIndicator(activeIndex) {
+            const nodes = [nodeExchange, nodeTotal, nodeInfo, nodeStayTuned];
+            nodes.forEach((node, idx) => {
+                if (idx === activeIndex) {
+                    node.classList.add('active-green');
+                } else {
+                    node.classList.remove('active-green');
+                    node.classList.remove('active');
+                }
+            });
+        }
+
+        function dropEmojiSidebarPresence(shouldDrop) {
+            if (shouldDrop) {
+                masterGridLayout.classList.add('no-sidebar');
+                sidebarEmojiPanel.classList.add('hidden');
+                coreWorkspaceLayer.classList.add('centered');
+                
+                modalExchange.classList.add('centered');
+                modalTotal.classList.add('centered');
+                modalInfo.classList.add('centered');
+                matrixLoaderShroud.classList.add('centered');
+            } else {
+                masterGridLayout.classList.remove('no-sidebar');
+                sidebarEmojiPanel.classList.remove('hidden');
+                coreWorkspaceLayer.classList.remove('centered');
+                
+                modalExchange.classList.remove('centered');
+                modalTotal.classList.remove('centered');
+                modalInfo.classList.remove('centered');
+                matrixLoaderShroud.classList.remove('centered');
+            }
+        }
+
+        welcomeTriggerNode.addEventListener('click', (e) => {
+            e.stopPropagation();
+            screenIntro.style.display = 'none';
+            screenCockpit.style.display = 'block';
+            if (!audioUnlocked) {
+                audioMainLoop.play().catch(e => console.log("Audio hold:", e));
+                audioUnlocked = true;
+            }
+        });
+
+        /* --- ⚔️ CHOP CHOP PASTE AUTOMATION INTERCEPT ROUTINE --- */
+        function checkInjectedChopChopContent() {
+            if(dataCoreInput.value.trim().length > 0) {
+                triggerPawPopup("Drop pasta check 🧮\nOr add file 💎\nAnd then check together file and paste 🧮");
+            }
+        }
+        dataCoreInput.addEventListener('input', checkInjectedChopChopContent);
+        dataCoreInput.addEventListener('paste', (e) => {
+            setTimeout(checkInjectedChopChopContent, 50);
+        });
+
+        platformRouter.addEventListener('change', (e) => {
+            const selection = e.target.value;
+            if (selection === "COMING_SOON") return;
+            activePlatform = selection;
+
+            if (selection === "GEMINI") {
+                bgFreeze = false;
+                clearActiveModalStates();
+                applyNeonSidebarIndicator(0);
+                return;
+            }
+
+            if (selection.startsWith("GROK")) {
+                bgFreeze = true; 
+                modalExchange.style.display = 'none'; 
+                
+                const jokes = [
+                    "Why did Grok cross the matrix? To calculate why the cat was wearing sunglasses. 😼",
+                    "Data streams are just spicy numbers until you add a little chaos.",
+                    "Your firewall looks like it was compiled by a human using a mouse."
+                ];
+                grokJokeTriggerString.innerText = jokes[Math.floor(Math.random() * jokes.length)];
+                grokCircuitModal.style.display = 'flex';
+            }
+        });
+
+        document.getElementById('grok-joke-trigger-string').addEventListener('click', (e) => {
+            e.stopPropagation();
+            grokCircuitModal.style.display = 'none';
+            initializeHardwareMatrixKeypad();
+        });
+
+        function initializeHardwareMatrixKeypad() {
+            keypadKeyLoopActive = true;
+            dropEmojiSidebarPresence(true);
+            cryptoFooterLinks.classList.add('hidden');
+            inputContainerBox.classList.add('hidden-hardware');
+            parkExitTriggerZone.style.display = "none";
+            loungePerksMatrix.style.display = "none";
+            
+            screenCockpit.style.backgroundImage = `url('${ASSET_FIREWALL}')`;
+            runningInputCache = "";
+            updateVirtualDisplayPanel("");
+            
+            const driverOverlay = document.getElementById('hardware-keypad-driver');
+            if (driverOverlay) driverOverlay.style.display = 'block';
+            firewallBreachNoticeBox.style.display = 'block';
+        }
+
+        dismissBreachNoticeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            firewallBreachNoticeBox.style.display = 'none';
+        });
+
+        function executeVerificationCircuit() {
+            if (runningInputCache === "7777777") {
+                triggerLoungeRoomBypass();
+                return;
+            }
+            triggerKeypadFaultCircuit();
+        }
+
+        function triggerLoungeRoomBypass() {
+            keypadKeyLoopActive = false;
+            clearActiveModalStates();
+            dropEmojiSidebarPresence(true);
+            cryptoFooterLinks.classList.add('hidden');
+            inputContainerBox.classList.add('hidden-hardware');
+            parkExitTriggerZone.style.display = "none";
+            firewallBreachNoticeBox.style.display = 'none';
+            
+            screenCockpit.style.backgroundImage = `url('${ASSET_LOUNGE}')`;
+            loungePerksMatrix.style.display = "block";
+            
+            const driverOverlay = document.getElementById('hardware-keypad-driver');
+            if (driverOverlay) driverOverlay.style.display = 'none';
+            
+            if (!audioMeowLoop.paused) {
+                audioPreLoungeStateTrack = "MEOW";
+            } else {
+                audioPreLoungeStateTrack = "MAIN";
+            }
+            
+            audioMainLoop.pause();
+            audioMeowLoop.pause();
+            audioTune2.pause();
+            
+            loungeTune3Active = false;
+            audioTune1.currentTime = 0; 
+            audioTune1.play().catch(err => console.log("Audio kick off off:", err));
+        }
+
+        function triggerKeypadFaultCircuit() {
+            audioTune4.currentTime = 0;
+            audioTune4.play().catch(err => console.log("Audio loop fault off:", err)); 
+            runningInputCache = ""; 
+            updateVirtualDisplayPanel("ERROR");
+        }
+
+        nodeStayTuned.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if(!audioMeowLoop.paused) {
+                audioMeowLoop.pause();
+                audioMainLoop.currentTime = 0;
+                audioMainLoop.play().catch(err => console.log("Audio lock:", err));
+                nodeStayTuned.classList.remove('active-green');
+                triggerPawPopup("Main Anthem restored cleanly! 🎵");
+            } else {
+                audioMainLoop.pause();
+                audioMeowLoop.currentTime = 0;
+                audioMeowLoop.play().catch(err => console.log("Audio lock:", err));
+                applyNeonSidebarIndicator(3);
+                triggerPawPopup("Meow Matrix audio loop initialized! 😹");
+            }
+        });
+
+        function setWorkspaceInputVisibility(visible) {
+            if (visible) {
+                inputContainerBox.style.opacity = "1";
+                dataCoreInput.style.pointerEvents = "auto";
+            } else {
+                inputContainerBox.style.opacity = "0";
+                dataCoreInput.style.pointerEvents = "none";
+                dataCoreInput.blur();
+            }
+        }
+
+        function clearActiveModalStates() {
+            if (keypadKeyLoopActive) return;
+            modalExchange.style.display = 'none';
+            modalTotal.style.display = 'none';
+            modalInfo.style.display = 'none';
+            commentBoxPortal.style.display = 'none';
+            matrixLoaderShroud.style.display = 'none';
+            modalDisclaimer.style.display = 'none';
+            
+            setWorkspaceInputVisibility(true);
+            nodeDisclaimer.classList.remove('active');
+            nodeExchange.classList.remove('active');
+            nodeTotal.classList.remove('active');
+            nodeInfo.classList.remove('active');
+        }
+
+        function triggerPawPopup(msg) {
+            pawBannerText.innerText = msg;
+            pawNotificationOverlay.style.display = 'flex';
+        }
+
+        pawNotificationOverlay.addEventListener('click', (e) => {
+            e.stopPropagation();
+            pawNotificationOverlay.style.display = 'none';
+        });
+
+        screenCockpit.addEventListener('click', function(e) {
+            clearActiveModalStates();
+        });
+
+        document.querySelectorAll('.terminal-modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        });
+
+        document.getElementById('box-btc').addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigator.clipboard.writeText(WALLET_BTC).then(() => {
+                triggerPawPopup("Bitcoin successfully copied to your paw 😹");
+            });
+        });
+
+        document.getElementById('box-eth').addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigator.clipboard.writeText(WALLET_ETH).then(() => {
+                triggerPawPopup("Ethereum successfully copied to your paw 😹");
+            });
+        });
+
+        document.querySelectorAll('.modal-close-trigger').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                clearActiveModalStates();
+            });
+        });
+
+        nodeExchange.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = (modalExchange.style.display === 'block');
+            clearActiveModalStates();
+            if (!isOpen) {
+                applyNeonSidebarIndicator(0);
+                setWorkspaceInputVisibility(false);
+                modalExchange.style.display = 'block';
+            }
+        });
+
+        function formatMatrixDots(num) {
+            let parts = num.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            return parts.join(".");
+        }
+
+        function formatCleanMicroDollars(tokenCount) {
+            let baseFraction = (tokenCount * 0.000000000001).toFixed(25);
+            let index = baseFraction.indexOf(".");
+            if (index === -1) return baseFraction + ".000000000000000000000";
+            return baseFraction.substring(0, index + 22);
+        }
+
+        nodeTotal.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = (modalTotal.style.display === 'block');
+            clearActiveModalStates();
+            if (!isOpen) {
+                applyNeonSidebarIndicator(1);
+                setWorkspaceInputVisibility(false);
+
+                const randomQuotes = [
+                    "Your request being prosed",
+                    "Loading  please stand by...",
+                    "Count ….one tokito, two tokinotos😹"
+                ];
+                loaderDisplayString.innerText = randomQuotes[Math.floor(Math.random() * randomQuotes.length)];
+                matrixLoaderShroud.style.display = 'block';
+
+                setTimeout(() => {
+                    let rawLength = dataCoreInput.value.length || 0;
+                    if (rawLength === 0 && lastLoadedFileSize > 0) {
+                        rawLength = lastLoadedFileSize;
+                    }
+                    
+                    const liteTokinitos     = Math.floor(rawLength * 1);
+                    const flashTokinitos    = Math.floor(rawLength * 2);
+                    const proTokinitos      = parseFloat((rawLength * 3.4).toFixed(1));
+                    const thinkingTokinitos = parseFloat((rawLength * 6.4).toFixed(1));
+                    const extendedTokinitos = parseFloat((rawLength * 9.6).toFixed(1));
+
+                    const pctLite     = rawLength === 0 ? "0.0000" : ((liteTokinitos / 40400000) * 1).toFixed(4);
+                    const pctFlash    = rawLength === 0 ? "0.0000" : ((flashTokinitos / 40400000) * 1).toFixed(4);
+                    const pctPro      = rawLength === 0 ? "0.0000" : ((proTokinitos / 40400000) * 1).toFixed(4);
+                    const pctThinking = rawLength === 0 ? "0.0000" : ((thinkingTokinitos / 40400000) * 1).toFixed(4);
+                    const pctExtended = rawLength === 0 ? "0.0000" : ((extendedTokinitos / 40400000) * 1).toFixed(4);
+
+                    receiptPrintoutArea.innerHTML = `
+                        <div class="receipt-line">Flash light = ${formatMatrixDots(liteTokinitos)} Tokinitos = ${pctLite}% daily (free tier) = $${formatCleanMicroDollars(liteTokinitos)}</div>
+                        <div class="receipt-line">Flash      = ${formatMatrixDots(flashTokinitos)} Tokinitos = ${pctFlash}% daily (free tier) = $${formatCleanMicroDollars(flashTokinitos)}</div>
+                        <div class="receipt-line">Pro        = ${formatMatrixDots(proTokinitos)} Tokinitos = ${pctPro}% daily (free tier) = $${formatCleanMicroDollars(proTokinitos)}</div>
+                        <div class="receipt-line">Pro thinking = ${formatMatrixDots(thinkingTokinitos)} Tokinitos = ${pctThinking}% daily (free tier) = $${formatCleanMicroDollars(thinkingTokinitos)}</div>
+                        <div class="receipt-line">Pro Extended = ${formatMatrixDots(extendedTokinitos)} Tokinitos = ${pctExtended}% daily (free tier) = $${formatCleanMicroDollars(extendedTokinitos)}</div>
+                        <div class="receipt-line" style="margin-top:14px; color:var(--matrix-green); text-align:center; white-space:normal;">Thank You for donation 😻</div>
+                    `;
+                    
+                    matrixLoaderShroud.style.display = 'none';
+                    modalTotal.style.display = 'block';
+                }, 1200); 
+            }
+        });
+
+        document.getElementById('receipt-copy-action').addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigator.clipboard.writeText(receiptPrintoutArea.innerText).then(() => {
+                triggerPawPopup("Ledger calculation copied successfully! 😹");
+            });
+        });
+
+        document.getElementById('receipt-save-action').addEventListener('click', (e) => {
+            e.stopPropagation();
+            triggerPawPopup("Press Power + Volume Up to snap a screenshot of your invoice! 📸");
+        });
+
+        nodeInfo.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = (modalInfo.style.display === 'block');
+            clearActiveModalStates();
+            if (!isOpen) {
+                applyNeonSidebarIndicator(2);
+                setWorkspaceInputVisibility(false);
+                modalInfo.style.display = 'block';
+            }
+        });
+
+        nodeDisclaimer.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = (modalDisclaimer.style.display === 'block');
+            clearActiveModalStates();
+            if (!isOpen) {
+                nodeDisclaimer.classList.add('active');
+                setWorkspaceInputVisibility(false);
+                modalDisclaimer.style.display = 'block';
+            }
+        });
+
+        commentOpenerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            commentBoxPortal.style.display = 'flex';
+        });
+
+        document.getElementById('comment-close-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            commentBoxPortal.style.display = 'none';
+            commentTextField.value = "";
+            commentMailField.value = "";
+        });
+
+        document.getElementById('comment-send-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const commentText = commentTextField.value.trim();
+            if(!commentText) {
+                triggerPawPopup("Comment block parameter is empty! 🙀");
+                return;
+            }
+
+            const mailtoUrl = `mailto:cateticos@gmail.com?subject=Terminal Transmission&body=comment=${encodeURIComponent(commentTextField.value)}%0D%0Aemail=${encodeURIComponent(commentMailField.value)}`;
+            window.location.href = mailtoUrl;
+
+            setTimeout(() => {
+                triggerPawPopup("Comment parameter sent cleanly to cateticos@gmail.com 😹");
+                commentBoxPortal.style.display = 'none';
+                commentTextField.value = "";
+                commentMailField.value = "";
+            }, 800);
+        });
+
+        document.getElementById('file-ingestor').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                lastLoadedFileSize = file.size; 
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const content = evt.target.result;
+                    dataCoreInput.value = content;
+                    
+                    if (content.includes("VALIDATED_DONATION_HASH_TOKEN")) {
+                        triggerLoungeRoomBypass();
+                    } else {
+                        triggerPawPopup(`Module [${file.name}] parsed. Data core payload mapped successfully.`);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function updateVirtualDisplayPanel(text) {
+            const panel = document.getElementById('authentic-display');
+            if (panel) panel.innerText = text;
+        }
+
+        window.pressVirtualHardwareKey = function(keyValue) {
+            if (!keypadKeyLoopActive) return;
+            if (keyValue === 'C') {
+                runningInputCache = "";
+                updateVirtualDisplayPanel("");
+                return;
+            }
+
+            if (keyValue === 'K') {
+                executeVerificationCircuit();
+                return;
+            }
+
+            if (runningInputCache.length < 9) {
+                runningInputCache += keyValue;
+                updateVirtualDisplayPanel(runningInputCache);
+            }
+        };
+
+        window.pressVirtualSilverButton = function() {
+            rotaryClicks++;
+            if (rotaryClicks === 1) {
+                runningInputCache = "";
+                updateVirtualDisplayPanel("next exit");
+                return;
+            }
+
+            if (rotaryClicks === 2) {
+                const driverOverlay = document.getElementById('hardware-keypad-driver');
+                if (driverOverlay) driverOverlay.style.display = 'none';
+                firewallBreachNoticeBox.style.display = 'none';
+                loungePerksMatrix.style.display = "none";
+                
+                screenCockpit.style.backgroundImage = `url('${ASSET_PARK}')`;
+                audioMainLoop.pause();
+                audioTune1.pause();
+                audioMeowLoop.pause();
+                audioTune3.pause();
+                
+                audioTune2.currentTime = 0; audioTune2.play().catch(err => console.log(err)); 
+                
+                dropEmojiSidebarPresence(true);
+                parkExitTriggerZone.style.display = "block";
+                return;
+            }
+
+            if (rotaryClicks === 3) {
+                window.pressVirtualSilverButton.exitResetCircuit();
+            }
+        };
+
+        window.pressVirtualSilverButton.exitResetCircuit = function() {
+            rotaryClicks = 0;
+            keypadKeyLoopActive = false;
+            bgFreeze = false;
+            window.location.reload(); 
+        };
+
+        window.executeParkExitRoute = function(e) {
+            e.stopPropagation();
+            window.pressVirtualSilverButton.exitResetCircuit();
+        };
+
+        /* --- 🏙️ INTERACTIVE LOUNGE ROOM OPERATIONS MATRIX --- */
+        window.triggerLoungeSeatAction = function(seatId) {
+            const boardQuotes = [
+                "Seat Alpha: The board member cat nods in deep agreement. 🐾",
+                "Seat Beta: A summary ledger report is pushed across the table.",
+                "Seat Gamma: Feral investor demands more tokinitos production!",
+                "Seat Delta: The executive cat suggests a catnap mid-meeting. 💤",
+                "Seat Epsilon: Highly confidential node data is being shared here.",
+                "Seat Zeta: Financial toast index records steady upward velocity.",
+                "Seat Eta: Board Approves The Toast! 🥂😹"
+            ];
+            triggerPawPopup(boardQuotes[seatId - 1] || "A seat is investigated.");
+        };
+
+        window.triggerLoungeCenterTable = function() {
+            triggerPawPopup("The marble table glows with subtle cybernetic blueprints. 🍷");
+        };
+
+        window.triggerLoungeVictoryHeader = function() {
+            triggerPawPopup("🏆 VICTORY: Cyber-Cat Matrix Secured! 🥂");
+        };
+
+        window.triggerLoungeMicroscopeModal = function(e) {
+            e.stopPropagation();
+            modalDisclaimer.style.display = 'block';
+        };
+
+        window.triggerLoungeAudioConsoleToggle = function(e) {
+            e.stopPropagation();
+            if (!loungeTune3Active) {
+                audioTune1.pause();
+                audioTune3.currentTime = 0;
+                audioTune3.play().catch(err => console.log("Audio lock:", err));
+                loungeTune3Active = true;
+                triggerPawPopup("Console Override: Tune3.mp3 Intercept Active! 🎛️");
+            } else {
+                audioTune3.pause();
+                loungeTune3Active = false;
+                audioTune1.currentTime = 0;
+                audioTune1.play().catch(err => console.log("Audio lock:", err));
+                triggerPawPopup("Lounge Track Matrix restored cleanly.");
+            }
+        };
+             document.getElementById('data-core-input').addEventListener('paste', () => {
+    const popup = document.getElementById('instruction-popup');
+    if (popup) popup.style.display = 'flex'; // Unhides the popup instantly on paste!
+});
+
+
+    </script>
+</body>
+</html>
