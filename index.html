@@ -389,11 +389,11 @@
             color: #00;
         }
 
-        .exchange-select {
+                .exchange-select {
             width: 100%;
-            background: #111b14;
-            border: 2px solid var(--matrix-green);
-            color: var(--matrix-green);
+            background: #000000 !important; /* Pure black background */
+            border: 2px solid var(--matrix-green) !important;
+            color: var(--matrix-green) !important;
             font-family: inherit;
             font-size: 1rem;
             font-weight: bold;
@@ -401,7 +401,16 @@
             margin-bottom: 15px;
             outline: none;
             border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+            -webkit-appearance: none; /* Wipes out the default iPhone gray arrow */
+            appearance: none;
         }
+
+        .exchange-select option {
+            background-color: #000b05 !important; /* Dark drop-down list background */
+            color: #00ff66 !important;            /* Glowing green list text */
+        }
+
         
         .file-loader-label {
             display: block;
@@ -671,11 +680,34 @@
     <div class="terminal-modal" id="modal-exchange-panel">
         <div class="modal-title">💎 Platform Select</div>
         <select class="exchange-select" id="platform-router">
-            <option value="GEMINI" style="color:#00ff66; background:#000;">GEMINI [REAL RATE]</option>
-            <option value="GROK_4_3" style="color:#00ff66; background:#000;">🚀 GROK 4.3 [CUSTOM TRACE]</option>
-            <option value="GROK_4_1" style="color:#00ff66; background:#000;">🚀 GROK 4.1 [LITE CORE]</option>
-            <option value="COMING_SOON" disabled style="color:#666666; background:#000;">,,,,, other platforms coming soon</option>
-        </select>
+    <option value="GEMINI_1_5_FLASH">💎 GEMINI 1.5 FLASH [LIGHT SPEED]</option>
+    <option value="GEMINI_1_5_PRO">💎 GEMINI 1.5 PRO [DEEP ANALYTICAL]</option>
+    <option value="SEMINI">💎 SEMINI [EXPERIMENTAL VECTOR]</option>
+
+    <option value="GROK_4_1_LITE">🛸 GROK 4.1 [LITE CORE]</option>
+    <option value="GROK_4_3_TRACE">🛸 GROK 4.3 [CUSTOM TRACE]</option>
+
+    <option value="CLAUDE_3_5_HAIKU">📜 CLAUDE 3.5 HAIKU [RAPID CORE]</option>
+    <option value="CLAUDE_3_5_SONNET">📜 CLAUDE 3.5 SONNET [PRODUCTION LAYER]</option>
+
+    <option value="GPT_4o_MINI">👁️👁️ GPT-4o MINI [EFFICIENCY MODE]</option>
+    <option value="GPT_4o_CORE">👁️👁️ GPT-4o [MAX REASONING]</option>
+
+    <option value="MISTRAL_7B_NATIVE">🍷 MISTRAL 7B [COMPACT FORCE]</option>
+    <option value="MISTRAL_LARGE">🍷 MISTRAL LARGE [WINE MATRIX]</option>
+
+    <option value="QWEN_2_5_LITE">🐉 QWEN 2.5 LITE [FAST THREAD]</option>
+    <option value="QWEN_2_5_MAX">🐉 QWEN 2.5 MAX [DRAGON PROTOCOL]</option>
+
+    <option value="DEEPSEEK_V3">🐋 DEEPSEEK V3 [OBSIDIAN ENGINE]</option>
+    <option value="DEEPSEEK_R1">🐋 DEEPSEEK R1 [LOGIC CRACKER]</option>
+
+    <option value="LLAMA_3_3_70B">🦙 LLAMA 3.3 [DISTRIBUTED FREEDOM]</option>
+    <option value="LLAMA_3_3_OMEGA">🦙 LLAMA 3.3 [OMEGA OVERLOAD]</option>
+
+    <option value="COPILOT_GATEWAY" disabled style="color:#666666;">🛠️ COPILOT SECTOR [CONNECTING LAYERS...]</option>
+</select>
+
         <label class="file-loader-label">
             📁 LOAD FILE DATA MODULE
             <input type="file" id="file-ingestor" style="display: none;">
