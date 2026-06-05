@@ -547,15 +547,16 @@
             <div class="welcome-touch-zone" id="welcome-trigger-node"></div>
         </div>
     </div>
-           <div onclick="document.getElementById('screen-intro').style.display='none'; document.getElementById('Chatroom.html').style.display='block'; audioMainLoop.play().catch(e=>{}); audioUnlocked=true;" 
-     style="position: absolute;
-            top: 0;
-            right: 0;
-            width: 60px;
-            height: 60px;
-            z-index: 9999;
-            cursor: pointer;">
-</div>
+                           <div onclick="document.getElementById('screen-intro').style.display='none'; window.location.href='Chatroom.html'; audioMainLoop.play().catch(e=>{}); audioUnlocked=true;"
+                         style="position: absolute;
+                                top: 0;
+                                right: 0;
+                                width: 60px;
+                                height: 60px;
+                                z-index: 9999;
+                                cursor: pointer;">
+                    </div>
+    
     <div id="screen-cockpit" class="app-screen">
         <div class="cockpit-grid" id="master-grid-layout">
             
