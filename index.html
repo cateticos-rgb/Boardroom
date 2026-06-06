@@ -429,21 +429,21 @@
         }
 
         /* The hidden scrolling options box (Pure Obsidian Matrix Green) */
-        .dropdown-options-matrix {
+                .dropdown-options-matrix {
             position: absolute;
-            top: 102%;
+            top: 100%;
             left: 0;
             width: 100%;
-            background: rgba(0, 0, 0, 0.98) !important;
-            border: 2px solid var(--matrix-green) !important;
+            background: #000000 !important; /* Solid black so background text doesn't bleed through */
+            border: 1px solid var(--matrix-green) !important;
             border-radius: 4px;
-            max-height: 200px;
+            max-height: 180px; /* Keeps it clean and compact */
             overflow-y: auto;
-            z-index: 999;
-            display: none; /* Controlled by Javascript click */
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9);
-            -webkit-overflow-scrolling: touch;
+            z-index: 9999 !important; /* Forces it to float ABOVE the file loader button */
+            display: none;
+            box-sizing: border-box;
         }
+
 
         /* Each item row inside the menu matrix */
         .matrix-opt-row {
