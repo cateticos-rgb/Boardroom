@@ -1022,10 +1022,10 @@
             
             if (isCurrentlyOpen) {
                 cbMatrix.style.display = 'none';
-                modalWindow.style.top = '25%'; // Shifts back down to normal when menu closes
+             // Shifts back down to normal when menu closes
             } else {
                 cbMatrix.style.display = 'block';
-                modalWindow.style.top = '12%'; // Jumps the window higher to give the list maximum room!
+             // Jumps the window higher to give the list maximum room!
             }
         });
 
@@ -1053,6 +1053,7 @@
                 // Keep Grok system checks or intercept triggers working flawlessly!
                 if (selectedValue.startsWith("GROK")) {
                     bgFreeze = true; 
+                    modalWindow.style.top = '';
                     modalExchange.style.display = 'none'; 
                     
                     const jokes = [
@@ -1068,7 +1069,7 @@
             });
         });
 
-        // Automatically hide open menus if clicking anywhere outside on background view
+        if (cbMatrix && e.target !== cbTrigger && !cbMatrix.contains(e.target)) cbMatrix.style.display = 'none';// Automatically hide open menus if clicking anywhere outside on background view
         window.addEventListener('click', () => {
             if (cbMatrix) cbMatrix.style.display = 'none';
         });
