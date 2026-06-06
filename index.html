@@ -428,21 +428,24 @@
             font-size: 0.8rem;
         }
 
-        /* The hidden scrolling options box (Pure Obsidian Matrix Green) */
+    
                 .dropdown-options-matrix {
             position: absolute;
             top: 100%;
             left: 0;
             width: 100%;
-            background: #000000 !important; /* Solid black so background text doesn't bleed through */
-            border: 1px solid var(--matrix-green) !important;
+            background: #000000 !important; /* Fixed: Solid black wall so nothing bleeds through */
+            border: 1px solid var(--matrix-green) !important; /* Fixed: Thinner 1px border */
             border-radius: 4px;
-            max-height: 180px; /* Keeps it clean and compact */
+            max-height: 180px;
             overflow-y: auto;
-            z-index: 9999 !important; /* Forces it to float ABOVE the file loader button */
+            z-index: 9999 !important; /* Fixed: Forces it to float cleanly on top of buttons */
             display: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9);
+            -webkit-overflow-scrolling: touch; /* Fixed: Completed the cut-off line */
             box-sizing: border-box;
         }
+
 
 
         /* Each item row inside the menu matrix */
@@ -1222,11 +1225,17 @@
                 triggerPawPopup("Ethereum successfully copied to your paw 😹");
             });
         });
+             // Remove highlight states from all rows first
+                document.querySelectorAll('.matrix-opt-row').forEach(r => {
+                    r.classList.remove('active');
+                    r.style.background = 'transparent'; // Completely turns off old green highlights
+                });
+                
+                // Add the clean highlight ONLY to the one you just pressed
+                row.classList.add('active');
+                row.style.background = 'rgba(0, 255, 102, 0.2)'; 
 
-        document.querySelectorAll('.modal-close-trigger').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                clearActiveModalStates();
+        
             });
         });
 
@@ -1477,9 +1486,16 @@
             triggerPawPopup("🏆 VICTORY: Cyber-Cat Matrix Secured! 🥂");
         };
 
-        window.triggerLoungeMicroscopeModal = function(e) {
-            e.stopPropagation();
+                window.triggerLoungeMicroscopeModal = function(e) {
+            e.stopPropagation(); // Stops the click from bubbling up
+            
+            // 1. Hide the exchange panel/pasta box completely!
+            document.getElementById('modal-exchange-panel').style.display = 'none';
+            
+            // 2. Open the disclaimer panel cleanly
             modalDisclaimer.style.display = 'block';
+        };
+
         };
 
         window.triggerLoungeAudioConsoleToggle = function(e) {
