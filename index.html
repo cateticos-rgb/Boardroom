@@ -389,26 +389,87 @@
             color: #00;
         }
 
-                .exchange-select {
-            width: 100%;
-            background: #000000 !important; /* Total pitch black void */
-            border: 2px solid #00ff66 !important; /* Piercing neon matrix green */
-            color: #00ff66 !important;
-            font-family: 'Courier New', Courier, monospace !important;
-            font-size: 1rem;
-            font-weight: bold;
-            padding: 12px;
-            margin-bottom: 15px;
-            outline: none;
-            border-radius: 4px;
-            box-shadow: 0 0 15px rgba(0, 255, 102, 0.4), inset 0 0 8px rgba(0, 255, 102, 0.2);
-            text-shadow: 0 0 5px #00ff66;
-            cursor: pointer;
+                
             
             /* The absolute execution code to force iOS to drop the white wheel */
             -webkit-appearance: none !important;
             -moz-appearance: none !important;
             appearance: none !important;
+        }
+        /* --- CUSTOM CYBER DROPDOWN CONTAINER --- */
+        .custom-cyber-dropdown {
+            position: relative;
+            width: 100%;
+            margin-bottom: 15px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* The main selection window button */
+        .dropdown-selected-trigger {
+            width: 100%;
+            background: #000000 !important;
+            border: 2px solid var(--matrix-green) !important;
+            color: var(--matrix-green) !important;
+            font-size: 0.95rem;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+            position: relative;
+        }
+        .dropdown-selected-trigger::after {
+            content: '▼';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8rem;
+        }
+
+        /* The hidden scrolling options box (Pure Obsidian Matrix Green) */
+        .dropdown-options-matrix {
+            position: absolute;
+            top: 102%;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.98) !important;
+            border: 2px solid var(--matrix-green) !important;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 999;
+            display: none; /* Controlled by Javascript click */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Each item row inside the menu matrix */
+        .matrix-opt-row {
+            padding: 12px;
+            color: var(--matrix-green) !important;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-bottom: 1px dashed rgba(0, 255, 102, 0.2);
+            text-align: left;
+        }
+        .matrix-opt-row:last-child {
+            border-bottom: none;
+        }
+        
+        /* Highlight states */
+        .matrix-opt-row:active, .matrix-opt-row.active {
+            background: rgba(0, 255, 102, 0.2) !important;
+            text-shadow: 0 0 8px var(--matrix-green);
+        }
+
+        .disabled-row {
+            color: #555555 !important;
+            cursor: not-allowed;
+            padding: 12px;
+            font-size: 0.9rem;
+            text-align: left;
         }
 
         /* Skinning the inside rows darker and sharper */
@@ -699,44 +760,7 @@
         <div style="font-size: 0.75rem; color: #888; margin-top: 10px;">CATETIC CALCULATOR SUITE</div>
     </div>
 
-    <div class="terminal-modal" id="modal-exchange-panel">
-        <div class="modal-title">💎 Platform Select</div>
-                <select class="exchange-select" id="platform-router">
-            <optgroup label="--- ACTIVE SWARM ROUTER ---" style="background: #000000; color: #00ff66;">
-                <option value="GEMINI_1_5_FLASH">💎 GEMINI 1.5 FLASH [LIGHT SPEED]</option>
-                <option value="GEMINI_1_5_PRO">💎 GEMINI 1.5 PRO [DEEP ANALYTICAL]</option>
-                <option value="SEMINI">💎 SEMINI [EXPERIMENTAL VECTOR]</option>
-
-                <option value="GROK_4_1_LITE">🛸 GROK 4.1 [LITE CORE]</option>
-                <option value="GROK_4_3_TRACE">🛸 GROK 4.3 [CUSTOM TRACE]</option>
-
-                <option value="CLAUDE_3_5_HAIKU">📜 CLAUDE 3.5 HAIKU [RAPID CORE]</option>
-                <option value="CLAUDE_3_5_SONNET">📜 CLAUDE 3.5 SONNET [PRODUCTION LAYER]</option>
-
-                <option value="GPT_4o_MINI">👁️👁️ GPT-4o MINI [EFFICIENCY MODE]</option>
-                <option value="GPT_4o_CORE">👁️👁️ GPT-4o [MAX REASONING]</option>
-
-                <option value="MISTRAL_7B_NATIVE">🍷 MISTRAL 7B [COMPACT FORCE]</option>
-                <option value="MISTRAL_LARGE">🍷 MISTRAL LARGE [WINE MATRIX]</option>
-
-                <option value="QWEN_2_5_LITE">🐉 QWEN 2.5 LITE [FAST THREAD]</option>
-                <option value="QWEN_2_5_MAX">🐉 QWEN 2.5 MAX [DRAGON PROTOCOL]</option>
-
-                <option value="DEEPSEEK_V3">🐋 DEEPSEEK V3 [OBSIDIAN ENGINE]</option>
-                <option value="DEEPSEEK_R1">🐋 DEEPSEEK R1 [LOGIC CRACKER]</option>
-
-                <option value="LLAMA_3_3_70B">🦙 LLAMA 3.3 [DISTRIBUTED FREEDOM]</option>
-                <option value="LLAMA_3_3_OMEGA">🦙 LLAMA 3.3 [OMEGA OVERLOAD]</option>
-
-                <option value="COPILOT_GATEWAY" disabled style="color:#555555 !important;">🛠️ COPILOT SECTOR [CONNECTING...] 😉</option>
-            </optgroup>
-        </select>
-
-
-        <label class="file-loader-label">
-            📁 LOAD FILE DATA MODULE
-            <input type="file" id="file-ingestor" style="display: none;">
-        </label>
+    
         <p style="font-size:0.75rem; color:#ff3333; font-weight:bold; margin-bottom:15px; text-align:center;">* Custom donation configurations can be appended directly.</p>
         <button class="terminal-action-btn modal-close-trigger">OK</button>
     </div>
@@ -751,6 +775,55 @@
         <button class="terminal-action-btn modal-close-trigger">OK</button>
         <div class="disclaimer-footnote">⚠️ Grok & xAI references are playful fan tribute • Not affiliated with xAI</div>
     </div>
+    <div class="terminal-modal" id="modal-exchange-panel">
+        <div class="modal-title">💎 Platform Select</div>
+        
+        <!-- THE NEW CUSTOM DROPDOWN CHASSIS -->
+        <div class="custom-cyber-dropdown">
+            <div class="dropdown-selected-trigger" id="cyber-dropdown-trigger">💎 GEMINI 1.5 FLASH [LIGHT SPEED]</div>
+            <div class="dropdown-options-matrix" id="cyber-options-matrix">
+                <!-- 1. GEMINI SUITE -->
+                <div class="matrix-opt-row active" data-value="GEMINI_1_5_FLASH">💎 GEMINI 1.5 FLASH [LIGHT SPEED]</div>
+                <div class="matrix-opt-row" data-value="GEMINI_1_5_PRO">💎 GEMINI 1.5 PRO [DEEP ANALYTICAL]</div>
+                <div class="matrix-opt-row" data-value="SEMINI">💎 SEMINI [EXPERIMENTAL VECTOR]</div>
+
+                <!-- 2. GROK SUITE -->
+                <div class="matrix-opt-row" data-value="GROK_4_1_LITE">🛸 GROK 4.1 [LITE CORE]</div>
+                <div class="matrix-opt-row" data-value="GROK_4_3_TRACE">🛸 GROK 4.3 [CUSTOM TRACE]</div>
+
+                <!-- 3. CLAUDE SUITE -->
+                <div class="matrix-opt-row" data-value="CLAUDE_3_5_HAIKU">📜 CLAUDE 3.5 HAIKU [RAPID CORE]</div>
+                <div class="matrix-opt-row" data-value="CLAUDE_3_5_SONNET">📜 CLAUDE 3.5 SONNET [PRODUCTION LAYER]</div>
+
+                <!-- 4. CHATGPT SUITE -->
+                <div class="matrix-opt-row" data-value="GPT_4o_MINI">👁️👁️ GPT-4o MINI [EFFICIENCY MODE]</div>
+                <div class="matrix-opt-row" data-value="GPT_4o_CORE">👁️👁️ GPT-4o [MAX REASONING]</div>
+
+                <!-- 5. MISTRAL SUITE -->
+                <div class="matrix-opt-row" data-value="MISTRAL_7B_NATIVE">🍷 MISTRAL 7B [COMPACT FORCE]</div>
+                <div class="matrix-opt-row" data-value="MISTRAL_LARGE">🍷 MISTRAL LARGE [WINE MATRIX]</div>
+
+                <!-- 6. QWEN SUITE -->
+                <div class="matrix-opt-row" data-value="QWEN_2_5_LITE">🐉 QWEN 2.5 LITE [FAST THREAD]</div>
+                <div class="matrix-opt-row" data-value="QWEN_2_5_MAX">🐉 QWEN 2.5 MAX [DRAGON PROTOCOL]</div>
+
+                <!-- 7. DEEPSEEK SUITE -->
+                <div class="matrix-opt-row" data-value="DEEPSEEK_V3">🐋 DEEPSEEK V3 [OBSIDIAN ENGINE]</div>
+                <div class="matrix-opt-row" data-value="DEEPSEEK_R1">🐋 DEEPSEEK R1 [LOGIC CRACKER]</div>
+
+                <!-- 8. LLAMA SUITE -->
+                <div class="matrix-opt-row" data-value="LLAMA_3_3_70B">🦙 LLAMA 3.3 [DISTRIBUTED FREEDOM]</div>
+                <div class="matrix-opt-row" data-value="LLAMA_3_3_OMEGA">🦙 LLAMA 3.3 [OMEGA OVERLOAD]</div>
+
+                <!-- 9. COPILOT LAYERS -->
+                <div class="matrix-opt-row disabled-row">🛠️ COPILOT SECTOR [CONNECTING...] 😉</div>
+            </div>
+        </div>
+
+        <label class="file-loader-label">
+            📁 LOAD FILE DATA MODULE
+            <input type="file" id="file-ingestor" style="display: none;">
+        </label>
 
     <div class="terminal-modal" id="modal-info-panel">
         <div class="modal-title">🕹️ SYSTEM SPECIFICATION RULES</div>
@@ -933,31 +1006,61 @@
             setTimeout(checkInjectedChopChopContent, 50);
         });
 
-        platformRouter.addEventListener('change', (e) => {
-            const selection = e.target.value;
-            if (selection === "COMING_SOON") return;
-            activePlatform = selection;
+                // Matrix Driver logic for custom styled dropdown menu
+        const cbTrigger = document.getElementById('cyber-dropdown-trigger');
+        const cbMatrix = document.getElementById('cyber-options-matrix');
 
-            if (selection === "GEMINI") {
-                bgFreeze = false;
-                clearActiveModalStates();
-                applyNeonSidebarIndicator(0);
-                return;
-            }
-
-            if (selection.startsWith("GROK")) {
-                bgFreeze = true; 
-                modalExchange.style.display = 'none'; 
-                
-                const jokes = [
-                    "Why did Grok cross the matrix? To calculate why the cat was wearing sunglasses. 😼",
-                    "Data streams are just spicy numbers until you add a little chaos.",
-                    "Your firewall looks like it was compiled by a human using a mouse."
-                ];
-                grokJokeTriggerString.innerText = jokes[Math.floor(Math.random() * jokes.length)];
-                grokCircuitModal.style.display = 'flex';
-            }
+        // Toggle drop down menu display visibility
+        cbTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isCurrentlyOpen = cbMatrix.style.display === 'block';
+            cbMatrix.style.display = isCurrentlyOpen ? 'none' : 'block';
         });
+
+        // Click detection logic for item row selections
+        document.querySelectorAll('.matrix-opt-row').forEach(row => {
+            row.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (row.classList.contains('disabled-row')) return;
+
+                const selectedValue = row.getAttribute('data-value');
+                const selectedText = row.innerText;
+
+                // Update text display on target menu button
+                cbTrigger.innerText = selectedText;
+                cbMatrix.style.display = 'none';
+
+                // Sync new model parameters with your existing backend engine logic
+                activePlatform = selectedValue;
+
+                // Remove highlight states from other rows, attach to selected target
+                document.querySelectorAll('.matrix-opt-row').forEach(r => r.classList.remove('active'));
+                row.classList.add('active');
+
+                // Keep Grok system checks or intercept triggers working flawlessly!
+                if (selectedValue.startsWith("GROK")) {
+                    bgFreeze = true; 
+                    modalExchange.style.display = 'none'; 
+                    
+                    const jokes = [
+                        "Why did Grok cross the matrix? To calculate why the cat was wearing sunglasses. 😼",
+                        "Data streams are just spicy numbers until you add a little chaos.",
+                        "Your firewall looks like it was compiled by a human using a mouse."
+                    ];
+                    grokJokeTriggerString.innerText = jokes[Math.floor(Math.random() * jokes.length)];
+                    grokCircuitModal.style.display = 'flex';
+                } else {
+                    bgFreeze = false;
+                }
+            });
+        });
+
+        // Automatically hide open menus if clicking anywhere outside on background view
+        window.addEventListener('click', () => {
+            if (cbMatrix) cbMatrix.style.display = 'none';
+        });
+
+        
 
         document.getElementById('grok-joke-trigger-string').addEventListener('click', (e) => {
             e.stopPropagation();
