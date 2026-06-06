@@ -1014,7 +1014,7 @@
         const cbMatrix = document.getElementById('cyber-options-matrix');
 
         // Toggle drop down menu display visibility
-        // Toggle drop down menu display visibility and adjust window height dynamically
+    
         cbTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
             const modalWindow = document.getElementById('modal-exchange-panel');
@@ -1022,10 +1022,8 @@
             
             if (isCurrentlyOpen) {
                 cbMatrix.style.display = 'none';
-             // Shifts back down to normal when menu closes
             } else {
                 cbMatrix.style.display = 'block';
-             // Jumps the window higher to give the list maximum room!
             }
         });
 
