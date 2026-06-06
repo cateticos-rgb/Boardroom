@@ -1068,13 +1068,9 @@
                 }
             });
         });
-
-        if (cbMatrix && e.target !== cbTrigger && !cbMatrix.contains(e.target)) cbMatrix.style.display = 'none';// Automatically hide open menus if clicking anywhere outside on background view
-        window.addEventListener('click', () => {
-            if (cbMatrix) cbMatrix.style.display = 'none';
-        });
-
-        
+            if (cbMatrix && e.target !== cbTrigger && !cbMatrix.contains(e.target)) cbMatrix.style.display = 'none';
+           });
+         
 
         document.getElementById('grok-joke-trigger-string').addEventListener('click', (e) => {
             e.stopPropagation();
