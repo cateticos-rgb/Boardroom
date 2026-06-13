@@ -644,7 +644,7 @@
                 <div id="authentic-display" style="position: absolute; top: 6.3%; left: 72%; transform: translateX(-50%); width: 44%; height: 5.5%; color: #00ff66; font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.35rem; text-align: center; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 12px rgba(0, 255, 102, 0.95); box-sizing: border-box; pointer-events: none;"></div>
 
                 <!-- Complete 3x4 Touch Grid Matrix calibrated directly over physical elements (O, K, C keys mapped) -->
-                <div style="position: absolute; top: 16.5%; left: 32.5%; width: 56%; height: 43.5%; display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 5% 5.5%; pointer-events: auto;">
+                <div style="position: absolute; top: 20.5%; left: 32.5%; width: 56%; height: 43.5%; display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 5% 5.5%; pointer-events: auto;"> 
                     <button onclick="pressVirtualHardwareKey('1')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
                     <button onclick="pressVirtualHardwareKey('2')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
                     <button onclick="pressVirtualHardwareKey('3')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
@@ -1327,11 +1327,11 @@
                 window.executeParkExitRoute = function(e) {
             e.stopPropagation();
             // Go back to main cockpit screen
-            screenCockpit.style.backgroundImage = `url('IMG_9247.jpg')`;  // your cockpit image
+            screenCockpit.style.backgroundImage = `url('IMG_9249.png')`;  // your cockpit image
             parkExitTriggerZone.style.display = "none";
             loungePerksMatrix.style.display = "none";
             dropEmojiSidebarPresence(false);   // restore sidebar
-            triggerPawPopup("Returned to main terminal 😹");
+            triggerPawPopup("Welcome Back 😹");
         };
 
                 /* --- 🏙️ INTERACTIVE LOUNGE ROOM OPERATIONS MATRIX --- */
