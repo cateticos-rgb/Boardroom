@@ -1324,9 +1324,14 @@
             window.location.reload(); 
         };
 
-        window.executeParkExitRoute = function(e) {
+                window.executeParkExitRoute = function(e) {
             e.stopPropagation();
-            window.pressVirtualSilverButton.exitResetCircuit();
+            // Go back to main cockpit screen
+            screenCockpit.style.backgroundImage = `url('IMG_9247.jpg')`;  // your cockpit image
+            parkExitTriggerZone.style.display = "none";
+            loungePerksMatrix.style.display = "none";
+            dropEmojiSidebarPresence(false);   // restore sidebar
+            triggerPawPopup("Returned to main terminal 😹");
         };
 
                 /* --- 🏙️ INTERACTIVE LOUNGE ROOM OPERATIONS MATRIX --- */
@@ -1411,10 +1416,13 @@
         }
 
         // Hook it into the keypad buttons
-        window.pressVirtualHardwareKey = function(keyValue) {
+                window.pressVirtualHardwareKey = function(keyValue) {
             if (!keypadKeyLoopActive) return;
-      if (navigator.vibrate) navigator.vibrate(50);
-            triggerVibration();   // ← NEW: Vibration
+            
+            // Vibration - must be direct user gesture
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
             
             if (keyValue === 'C') {
                 runningInputCache = "";
