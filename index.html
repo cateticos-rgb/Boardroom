@@ -1474,27 +1474,22 @@
             pawNotificationOverlay.style.display = 'none';
             window.location.href = "https://243b2924-40af-41f7-812b-4ef1f8e60792-00-xcymrianzq0c.picard.replit.dev/";
         }
-                function exitToPark() {
+                     function exitToPark() {
             pawNotificationOverlay.style.display = 'none';
             loungePerksMatrix.style.display = "none";
-            
-            // Go to Park
             screenCockpit.style.backgroundImage = `url('${ASSET_PARK}')`;
             parkExitTriggerZone.style.display = "block";
-            
-            triggerPawPopup("Returned to the Park 😹");
-        }
-
-        window.executeParkExitRoute = function(e) {
+            triggerPawPopup("Arrived at the Park 😹");
+        }   
+             window.executeParkExitRoute = function(e) {
             e.stopPropagation();
-            // From Park → Dojo / Welcome page
+            loungePerksMatrix.style.display = "none";
+            parkExitTriggerZone.style.display = "none";
             screenCockpit.style.display = 'none';
             screenIntro.style.display = 'block';
-            parkExitTriggerZone.style.display = "none";
-            loungePerksMatrix.style.display = "none";
-            
-            triggerPawPopup("Welcome back 😹");
+            triggerPawPopup("welcome Back😹");
         };
+        
         
     </script>
     <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "15983b6993044c56abaa85b0fe6754d5"}'></script><!-- End Cloudflare Web Analytics -->
