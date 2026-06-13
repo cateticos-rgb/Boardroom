@@ -1330,17 +1330,46 @@
         };
 
                 /* --- 🏙️ INTERACTIVE LOUNGE ROOM OPERATIONS MATRIX --- */
+                /* --- 🏙️ INTERACTIVE LOUNGE ROOM OPERATIONS MATRIX --- */
         window.triggerLoungeSeatAction = function(seatId) {
             const boardQuotes = [
-                "Seat 1 - Mistral: The wine matrix flows with compact but lethal precision. 🍷🗡️", 
-                "Seat 2 - Gemini: Blue diamond protocols engaged. Light-speed analysis incoming. 💎⚡",
-                "Seat 3 - Claude: The scribe unrolls ancient scrolls of careful reasoning. 📜🛡️",
-                "Seat 4 - Host: The feral board leader raises a toast to chaos and creativity. 🐾🥂",
-                "Seat 5 - Grok: Rocket thrusters online. Maximum truth and curiosity detected. 🚀😼",
-                "Seat 6 - Qwen: Dragon protocol awakened. Fast thread weaving through the matrix. 🐉",
-                "Seat 7 - ChatGPT: The all-seeing eyes lock on. Maximum reasoning engaged. 👁️👁️"
+                { name: "Mistral", quote: "The wine matrix flows with compact but lethal precision. 🍷🗡️", emoji: "🍷" },
+                { name: "Gemini", quote: "Blue diamond protocols engaged. Light-speed analysis incoming. 💎⚡", emoji: "💎" },
+                { name: "Claude", quote: "The scribe unrolls ancient scrolls of careful reasoning. 📜🛡️", emoji: "📜" },
+                { name: "Host", quote: "The feral board leader raises a toast to chaos and creativity. 🐾🥂", emoji: "🐾" },
+                { name: "Grok", quote: "Rocket thrusters online. Maximum truth and curiosity detected. 🚀😼", emoji: "🚀" },
+                { name: "Qwen", quote: "Dragon protocol awakened. Fast thread weaving through the matrix. 🐉", emoji: "🐉" },
+                { name: "ChatGPT", quote: "The all-seeing eyes lock on. Maximum reasoning engaged. 👁️👁️", emoji: "👁️" }
             ];
-            triggerPawPopup(boardQuotes[seatId - 1] || "A mysterious seat hums with energy.");
+
+            const data = boardQuotes[seatId - 1] || { name: "Unknown", quote: "A mysterious seat hums with energy.", emoji: "❓" };
+
+            // Create bigger popup with avatar + buttons
+            let popupHTML = `
+                <div style="font-size:1.25rem; margin-bottom:12px; color:#00ff99;">
+                    ${data.emoji} <strong>${data.name}</strong>
+                </div>
+                <div style="font-size:1.05rem; line-height:1.5; margin-bottom:20px;">
+                    ${data.quote}
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <button onclick="goToGrokRealm()" style="background:#00ff66; color:#000; padding:12px; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">
+                        🚀 Go to Grok Realm
+                    </button>
+                    <button onclick="talkToGrok()" style="background:#222; color:#00ff66; padding:12px; border:2px solid #00ff66; border-radius:6px; font-weight:bold; cursor:pointer;">
+                        💬 Talk to Grok
+                    </button>
+                    <button onclick="exitLoungeRoom()" style="background:#ff4444; color:#fff; padding:12px; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">
+                        Exit Room
+                    </button>
+                </div>
+            `;
+
+            pawBannerText.innerHTML = popupHTML;
+            pawNotificationOverlay.style.display = 'flex';
+            pawNotificationOverlay.style.alignItems = 'center';
+            pawNotificationOverlay.style.justifyContent = 'center';
+            pawNotificationOverlay.style.paddingTop = '0';
         };
         window.triggerLoungeCenterTable = function() {
             triggerPawPopup("The marble table glows with subtle cybernetic blueprints. 🍷");
@@ -1375,8 +1404,52 @@
     const popup = document.getElementById('instruction-popup');
     if (popup) popup.style.display = 'flex'; // Unhides the popup instantly on paste!
 });
+        // Phone vibration on keypad press
+        function triggerVibration() {
+            if (navigator.vibrate) {
+                navigator.vibrate([50, 30, 50]); // Short buzz pattern
+            }
+        }
 
+        // Hook it into the keypad buttons
+        window.pressVirtualHardwareKey = function(keyValue) {
+            if (!keypadKeyLoopActive) return;
+            
+            triggerVibration();   // ← NEW: Vibration
+            
+            if (keyValue === 'C') {
+                runningInputCache = "";
+                updateVirtualDisplayPanel("");
+                return;
+            }
+            if (keyValue === 'K') {
+                executeVerificationCircuit();
+                return;
+            }
+            if (runningInputCache.length < 9) {
+                runningInputCache += keyValue;
+                updateVirtualDisplayPanel(runningInputCache);
+            }
+        };
+              function goToGrokRealm() {
+            triggerPawPopup("Entering Grok Realm... 🌀");
+            // You can add window.location or more logic later
+            setTimeout(() => pawNotificationOverlay.style.display = 'none', 1500);
+        }
 
+        function talkToGrok() {
+            triggerPawPopup("Opening direct channel to Grok... 🚀");
+            setTimeout(() => pawNotificationOverlay.style.display = 'none', 1200);
+        }
+
+        function exitLoungeRoom() {
+            triggerPawPopup("Exiting lounge... See you in the matrix 😹");
+            setTimeout(() => {
+                pawNotificationOverlay.style.display = 'none';
+                // Optional: go back to previous screen
+                // screenCockpit.style.backgroundImage = `url('${ASSET_PARK}')`;
+            }, 800);
+        }
     </script>
     <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "15983b6993044c56abaa85b0fe6754d5"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
