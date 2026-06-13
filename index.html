@@ -644,7 +644,7 @@
                 <div id="authentic-display" style="position: absolute; top: 6.3%; left: 72%; transform: translateX(-50%); width: 44%; height: 5.5%; color: #00ff66; font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.35rem; text-align: center; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 12px rgba(0, 255, 102, 0.95); box-sizing: border-box; pointer-events: none;"></div>
 
                 <!-- Complete 3x4 Touch Grid Matrix calibrated directly over physical elements (O, K, C keys mapped) -->
-                <div style="position: absolute; top: 20.5%; left: 32.5%; width: 56%; height: 43.5%; display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 5% 5.5%; pointer-events: auto;"> 
+                <div style="position: absolute; top: 25.5%; left: 32.5%; width: 56%; height: 43.5%; display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 5% 5.5%; pointer-events: auto;"> 
                     <button onclick="pressVirtualHardwareKey('1')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
                     <button onclick="pressVirtualHardwareKey('2')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
                     <button onclick="pressVirtualHardwareKey('3')" style="background:transparent; border:none; outline:none; cursor:pointer;"></button>
@@ -1375,8 +1375,15 @@
             pawNotificationOverlay.style.justifyContent = 'center';
             pawNotificationOverlay.style.paddingTop = '20px';
         };
-        window.triggerLoungeCenterTable = function() {
+                window.triggerLoungeCenterTable = function() {
             triggerPawPopup("The marble table glows with subtle cybernetic blueprints. 🍷");
+            
+            // Auto-dismiss after 4 seconds so it doesn't stick
+            setTimeout(() => {
+                if (pawNotificationOverlay.style.display === 'flex') {
+                    pawNotificationOverlay.style.display = 'none';
+                }
+            }, 4000);
         };
 
         window.triggerLoungeVictoryHeader = function() {
@@ -1467,13 +1474,28 @@
             pawNotificationOverlay.style.display = 'none';
             window.location.href = "https://243b2924-40af-41f7-812b-4ef1f8e60792-00-xcymrianzq0c.picard.replit.dev/";
         }
-
-        function exitToPark() {
+                function exitToPark() {
             pawNotificationOverlay.style.display = 'none';
-            screenCockpit.style.backgroundImage = `url('${ASSET_PARK}')`;
             loungePerksMatrix.style.display = "none";
-            triggerPawPopup("Returned to the Park safely 😹");
+            
+            // Go to Park
+            screenCockpit.style.backgroundImage = `url('${ASSET_PARK}')`;
+            parkExitTriggerZone.style.display = "block";
+            
+            triggerPawPopup("Returned to the Park 😹");
         }
+
+        window.executeParkExitRoute = function(e) {
+            e.stopPropagation();
+            // From Park → Dojo / Welcome page
+            screenCockpit.style.display = 'none';
+            screenIntro.style.display = 'block';
+            parkExitTriggerZone.style.display = "none";
+            loungePerksMatrix.style.display = "none";
+            
+            triggerPawPopup("Welcome back to the Dojo 😹");
+        };
+        
     </script>
     <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "15983b6993044c56abaa85b0fe6754d5"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
