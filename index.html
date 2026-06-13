@@ -1413,7 +1413,7 @@
         // Hook it into the keypad buttons
         window.pressVirtualHardwareKey = function(keyValue) {
             if (!keypadKeyLoopActive) return;
-            
+      if (navigator.vibrate) navigator.vibrate(50);
             triggerVibration();   // ← NEW: Vibration
             
             if (keyValue === 'C') {
