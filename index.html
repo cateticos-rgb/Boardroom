@@ -467,6 +467,7 @@
             text-align: center;
             max-width: 85%;
             box-shadow: 0 0 30px rgba(0, 255, 102, 0.5);
+            cursor: pointer;
         }
         .grok-joke-text {
             color: var(--matrix-green);
@@ -475,6 +476,7 @@
             cursor: pointer;
             line-height: 1.5;
             margin-bottom: 20px;
+       
         }
 
         /* --- HARDWARE INTERLAY SCALING WRAPPER CONTAINER --- */
@@ -683,7 +685,7 @@
     <div id="grok-circuit-modal">
         <div class="grok-joke-box">
             <div class="grok-joke-text" id="grok-joke-trigger-string"></div>
-            <div style="color: #666; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 8px;">[TAP TEXT TO RUN COMBINATION INTERFACE]</div>
+            <div class="grok-joke-box" id="grok-joke-box"><div style="color: #666; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 8px;">[TAP TEXT TO RUN COMBINATION INTERFACE]</div>
             <div class="disclaimer-footnote">⚠️ Option 1:
 "Grok & xAI, ChatGPT & OpenAI, Gemini & Google, Claude & Anthropic, Mistral, Qwen, DeepSeek, Llama & Meta, Copilot & Microsoft (still updating...) references are playful fan tribute and satirical cyberpunk cat lore • Not affiliated with Not affiliated with xAI, OpenAI, Google, Anthropic, Mistral, Qwen, DeepSeek, Meta, or Microsoft</div>
         </div>
@@ -946,11 +948,11 @@
             }
         });
 
-        document.getElementById('grok-joke-trigger-string').addEventListener('click', (e) => {
-            e.stopPropagation();
-            grokCircuitModal.style.display = 'none';
-            initializeHardwareMatrixKeypad();
-        });
+        document.getElementById('grok-joke-box').addEventListener('click', (e) => {
+    e.stopPropagation();
+    grokCircuitModal.style.display = 'none';
+    initializeHardwareMatrixKeypad();
+});
 
         function initializeHardwareMatrixKeypad() {
             keypadKeyLoopActive = true;
