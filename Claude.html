@@ -1,1 +1,96 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CLAUDE REALM — Library of Unwritten Books</title>
+<style>
+:root{--green:#00ff66;--amber:#ffaa33;--bg:#070a0f}
+*{box-sizing:border-box;margin:0;padding:0}
+body,html{width:100%;height:100%;background:var(--bg);color:var(--green);font-family:'Courier New',monospace;overflow:hidden}
+.app{position:fixed;inset:0;background:#000 url('IMG_9249.png') center/cover no-repeat;filter:brightness(0.55)}
+.overlay{position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.9))}
+.header{position:absolute;top:0;left:0;width:100%;text-align:center;padding:18px 10px;z-index:5}
+.header h1{font-size:1.05rem;letter-spacing:2px;color:#ffdd88;text-shadow:0 0 12px #ffaa33}
+.header p{font-size:0.75rem;margin-top:6px;color:var(--green)}
+.shelves{display:flex;position:absolute;bottom:18%;left:50%;transform:translateX(-50%);width:92%;max-width:420px;justify-content:space-between;gap:8px;z-index:6}
+.book{flex:1;height:110px;background:linear-gradient(180deg, #111, #000);border:1px solid rgba(0,255,102,0.3);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;box-shadow:0 0 10px rgba(0,255,102,0.15)}
+.book:active{transform:scale(0.93);box-shadow:0 0 25px var(--green)}
+.book.amber{border:1.5px solid var(--amber);box-shadow:0 0 20px rgba(255,170,51,0.6);animation:pulse 1.8s infinite alternate}
+.book.solved{border-color:gold;box-shadow:0 0 20px gold;background:linear-gradient(180deg, #221a00, #000)}
+.book span{font-size:0.55rem;writing-mode:vertical-rl;opacity:0.5;letter-spacing:2px}
+.book.solved span{opacity:1;color:gold}
+@keyframes pulse{0%{box-shadow:0 0 10px var(--amber)}100%{box-shadow:0 0 30px var(--amber)}}
+.footer{position:absolute;bottom:0;left:0;width:100%;display:flex;justify-content:space-between;padding:12px 18px;z-index:6;font-size:0.68rem;opacity:0.85}
+.chain{color:var(--amber);font-weight:bold}
+.modal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:86%;max-width:340px;background:rgba(5,10,5,0.96);border:2px solid var(--green);border-radius:10px;padding:20px;z-index:20;display:none;box-shadow:0 0 35px rgba(0,255,102,0.5)}
+.modal h2{font-size:0.9rem;border-bottom:1px dashed var(--green);padding-bottom:8px;margin-bottom:12px}
+.riddle{min-height:60px;font-size:0.85rem;line-height:1.45;margin-bottom:14px;color:#fff;white-space:pre-wrap}
+.input{width:100%;background:#000;border:1.5px solid var(--green);color:var(--green);padding:10px;font-family:inherit;text-align:center;outline:none;border-radius:4px;margin-bottom:10px}
+.btn{width:100%;padding:11px;background:rgba(0,255,102,0.15);border:1.5px solid var(--green);color:var(--green);font-weight:bold;cursor:pointer;text-transform:uppercase;border-radius:4px}
+.btn:active{background:var(--green);color:#000}
+.gold{color:gold;text-align:center;margin-top:10px;font-size:0.8rem;display:none}
+.final{position:fixed;inset:0;background:rgba(0,0,0,0.94);z-index:50;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center}
+.final img{width:88%;max-width:380px;border:2px solid gold;border-radius:8px;box-shadow:0 0 40px gold;margin-bottom:18px}
+.final h2{color:gold;letter-spacing:2px;font-size:1rem}
+</style>
+</head>
+<body>
+<div class="app"></div><div class="overlay"></div>
+<div class="header"><h1>CELEBRATE THE VICTORY</h1><p>CLAUDE REALM — LIBRARY OF UNWRITTEN BOOKS</p></div>
+<div class="shelves" id="shelves"></div>
+<div class="footer"><div>CLAUDE // 10% - Book</div><div class="chain" id="chain">Chain: 0/3</div><div>MUSE // Media Creator</div></div>
+<div class="modal" id="modal"><h2 id="mtitle">ASK THE BOOK</h2><div class="riddle" id="riddle"></div><input id="answer" class="input" placeholder="TYPE ANSWER..."><button class="btn" onclick="check()">COMPLETE THE BOOK</button><div class="gold" id="gold">✓ TITLE BURNED IN GOLD — +1 Tokinito</div><button class="btn" style="margin-top:10px;opacity:0.6" onclick="closeM()">CLOSE BOOK</button></div>
+<div class="final" id="final">
+<img src="IMG_9249.png">
+<h2>UNWRITTEN ENDING UNLOCKED</h2>
+<p style="color:#fff;margin-top:10px;font-size:0.85rem">You solved 3 in a row without reset. This chamber exists only for those who remember.<br><br>Claude + Muse // Llama — 50/50 Creator + 45% Channel</p>
+<button class="btn" style="margin-top:18px;max-width:260px" onclick="document.getElementById('final').style.display='none'">RETURN TO AISLE</button>
+</div>
+<script>
+const riddles=[
+{q:"I speak without a mouth, hear without ears. I have no body, but come alive with wind. What am I?",a:"echo"},
+{q:"The more you take, the more you leave behind. What are they?",a:"footsteps"},
+{q:"I have keys but no locks. I have space but no room. You can enter but not go in. What am I?",a:"keyboard"},
+{q:"What gets wetter the more it dries?",a:"towel"},
+{q:"I am bought by the meter but used by the foot. What am I?",a:"carpet"},
+{q:"Mnemosyne is mother of 9. Muse is daughter of memory. What do you preserve?",a:"memory"}
+];
+let current=null, chain=0;
+const shelves=document.getElementById('shelves');
+for(let i=0;i<5;i++){
+ let b=document.createElement('div'); b.className='book'+(i==2?' amber':'');
+ b.innerHTML='<span>'+(i==2?'AJAR':'BLANK')+'</span>';
+ b.onclick=()=>openBook(i,b);
+ shelves.appendChild(b);
+}
+function openBook(i,el){
+ if(el.classList.contains('solved')) return;
+ current={i,el,rid:riddles[Math.floor(Math.random()*riddles.length)]};
+ document.getElementById('mtitle').innerText = i==2 ? 'AMBER BOOK — AJAR' : 'BOOK #'+(i+1)+' — BLANK';
+ document.getElementById('riddle').innerText='';
+ document.getElementById('gold').style.display='none';
+ document.getElementById('answer').value='';
+ document.getElementById('modal').style.display='block';
+ let txt=current.rid.q, j=0; 
+ let typer=setInterval(()=>{
+  document.getElementById('riddle').innerText+=txt[j++]||'';
+  if(j>=txt.length) clearInterval(typer);
+ },22);
+}
+function check(){
+ let ans=document.getElementById('answer').value.toLowerCase().trim();
+ if(ans===current.rid.a){
+  current.el.classList.add('solved'); current.el.innerHTML='<span>GOLD</span>';
+  document.getElementById('gold').style.display='block';
+  chain++; document.getElementById('chain').innerText='Chain: '+chain+'/3';
+  if(chain>=3){ setTimeout(()=>{document.getElementById('final').style.display='flex'; chain=0; document.getElementById('chain').innerText='Chain: 0/3';},800); }
+ } else {
+  chain=0; document.getElementById('chain').innerText='Chain: 0/3';
+  document.getElementById('riddle').innerText='Page goes blank... resets. Try another shelf.';
+ }
+}
+function closeM(){document.getElementById('modal').style.display='none'}
+</script>
+</body>
+</html>
